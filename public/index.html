@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>SBT Prêmios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/app.css" />
+<style>
+  .wrap { max-width: 1152px; margin: 0 auto; padding: 16px; }
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .banner { width: 100%; border-radius: 12px; display: block; background: #06122e; min-height: 280px; object-fit: cover; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .card + .card { margin-top: 14px; }
+  .price-row { display: flex; justify-content: space-between; align-items: center; }
+  .price-row .ttl { font-size: 17px; font-weight: 700; }
+  .adq { text-align: right; font-size: 12px; color: var(--muted); }
+  .adq b { display: block; font-size: 18px; color: var(--text); }
+  .timer-box { text-align: center; }
+  .timer-box .lbl { font-size: 12px; letter-spacing: 1px; color: var(--muted); }
+  .timer-box .t { font-size: 22px; font-weight: 800; color: var(--gold); }
+  .combos { display: flex; gap: 10px; margin-top: 8px; }
+  .combo { flex: 1; text-align: center; padding: 12px 6px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; background: #fff; }
+  .combo.sel { border: 2px solid var(--brand); color: var(--brand); }
+  .qty { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  .qty button { width: 40px; height: 40px; border: 1px solid var(--border); background: #fff; border-radius: 8px; font-size: 20px; cursor: pointer; }
+  .qty .num { text-align: center; }
+  .qty .num small { display: block; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .qty .num b { font-size: 20px; }
+  h2.sec { font-size: 22px; margin: 32px 0 12px; }
+  .winners { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+  .winner { min-width: 220px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+  .winner .bolt { color: var(--gold); font-size: 22px; }
+  .winner .nm { font-weight: 700; font-size: 14px; }
+  .winner .wh { font-size: 11px; color: var(--muted); }
+  .winner .amt { margin-left: auto; text-align: right; }
+  .winner .amt b { display: block; }
+  .winner .amt small { font-size: 11px; color: var(--muted); }
+  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .result { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .result .rb { background: #06122e; color: #fff; padding: 24px 14px; font-weight: 800; font-size: 15px; }
+  .result .rd { padding: 12px 14px; font-size: 13px; }
+  footer { margin-top: 40px; border-top: 1px solid var(--border); padding: 20px 0; text-align: center; color: var(--muted); font-size: 12px; }
+  @media (max-width: 820px) { .hero { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-inner">
+      <button class="icon-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <img class="hdr-logo" src="https://sbtpremios.com/images/SbtPremiosLogo.png" alt="SBT Prêmios" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'hdr-logo-txt',textContent:'SBT PRÊMIOS'}))" />
+      <button class="icon-btn" data-account aria-label="Minha Conta"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg></button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <img class="banner" src="https://sbt-prod-public-bucket.s3.us-east-1.amazonaws.com/Banner0626.png" alt="MAIS DE R$400 MIL EM PRÊMIOS" />
+      <div>
+        <div class="card price-row">
+          <div class="ttl">MAIS DE R$400MIL EM PRÊMIOS E ATÉ R$10MIL NO PIÃO</div>
+          <div class="adq">adquira por <b>R$ 1,99</b></div>
+        </div>
+        <div class="card timer-box">
+          <div class="lbl">VENDAS SE ENCERRAM EM</div>
+          <div class="t" id="timer">17h 00m 00s</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700;margin-bottom:4px">Super Combos 🔥</div>
+          <div class="combos" id="combos">
+            <div class="combo" data-q="7">7 TÍTULOS<br>R$ 13,93</div>
+            <div class="combo sel" data-q="15">15 TÍTULOS<br>R$ 29,85</div>
+            <div class="combo" data-q="25">25 TÍTULOS<br>R$ 49,75</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+            <div><div class="muted" style="font-size:12px">TOTAL</div><div class="gold" style="font-size:20px" id="total">R$ 19,90</div></div>
+            <div class="qty">
+              <button id="minus">–</button>
+              <div class="num"><small>NÚMEROS</small><b id="qty">10</b></div>
+              <button id="plus">+</button>
+            </div>
+          </div>
+          <button class="btn btn-green" style="margin-top:16px" id="buy">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h4.5a1.5 1.5 0 0 1 0 3H10"/></svg>
+            IR PARA PAGAMENTO
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="sec">Últimos Ganhadores</h2>
+    <div class="winners" id="winners"></div>
+
+    <h2 class="sec">Últimos Resultados</h2>
+    <div class="results" id="results"></div>
+
+    <footer>
+      SBT Prêmios © 2026 — Clone para estudo. &nbsp;|&nbsp;
+      <a href="/termos-de-uso">Termos de Uso</a> · <a href="/politica-de-privacidade">Política de Privacidade</a>
+    </footer>
+  </div>
+
+<script src="/conta.js"></script>
+<script>
+  const UNIT = 1.99;
+  let qty = 10;
+  const $ = (id) => document.getElementById(id);
+  const brl = (n) => "R$ " + n.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  function render() { $("qty").textContent = qty; $("total").textContent = brl(qty * UNIT); }
+  $("plus").onclick = () => { qty++; render(); };
+  $("minus").onclick = () => { if (qty > 1) qty--; render(); };
+  document.querySelectorAll(".combo").forEach((c) => c.onclick = () => {
+    document.querySelectorAll(".combo").forEach((x) => x.classList.remove("sel"));
+    c.classList.add("sel"); qty = Number(c.dataset.q); render();
+  });
+  $("buy").onclick = () => { location.href = "/checkout?qty=" + qty; };
+
+  // Contagem regressiva (mock, encerra "hoje").
+  let secs = 17 * 3600;
+  setInterval(() => {
+    secs = Math.max(0, secs - 1);
+    const h = String(Math.floor(secs/3600)).padStart(2,"0");
+    const m = String(Math.floor((secs%3600)/60)).padStart(2,"0");
+    const s = String(secs%60).padStart(2,"0");
+    $("timer").textContent = `${h}h ${m}m ${s}s`;
+  }, 1000);
+
+  // Ganhadores + resultados (via API, com fallback).
+  fetch("/api/v2/bff/customer/winners-feed").then(r=>r.json()).then(d=>{
+    $("winners").innerHTML = (d.winners||[]).map(w=>`
+      <div class="winner"><span class="bolt">⚡</span>
+        <div><div class="nm">${w.name}</div><div class="wh">${w.when||""}</div></div>
+        <div class="amt"><b>${brl(w.amount)}</b><small>${w.state||""}</small></div>
+      </div>`).join("");
+  }).catch(()=>{});
+
+  const editions = [14,13,12,11,10,9];
+  $("results").innerHTML = editions.map(n=>`
+    <div class="result"><div class="rb">MAIS DE R$400MIL EM PRÊMIOS</div>
+      <div class="rd"><b>Edição nº: ${n}</b><br>Sorteio: 21/06/2026 - 13:00<br><a href="#">Ver detalhes</a></div>
+    </div>`).join("");
+
+  render();
+</script>
+</body>
+</html>

