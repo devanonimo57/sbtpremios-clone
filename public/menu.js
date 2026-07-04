@@ -58,6 +58,7 @@
   const close = () => { nav.classList.remove("open"); ov.classList.remove("open"); nav.setAttribute("aria-hidden", "true"); };
   ov.onclick = close;
   nav.querySelector(".mnav-x").onclick = close;
+  window.openMenu = open;
 
   // Liga todas as barrinhas do header (aria-label="Menu" ou [data-menu]).
   document.querySelectorAll('[aria-label="Menu"], [data-menu]').forEach((b) => (b.onclick = open));
