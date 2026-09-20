@@ -76,12 +76,13 @@
   .slot-inner-ring { position:absolute; inset:12px; border-radius:50%; background:#fff;
     box-shadow: inset 0 0 15px rgba(0,0,0,.08); overflow:hidden; }
 
-  /* Pétalas brancas decorativas (padrão radial) */
-  .slot-petals { position:absolute; inset:0; border-radius:50%; }
-  .slot-petals::before { content:''; position:absolute; inset:8px; border-radius:50%;
-    background: repeating-conic-gradient(from 0deg, #fff 0deg 5deg, #e8edf5 5deg 10deg);
-    mask: radial-gradient(circle, transparent 52%, black 52%);
-    -webkit-mask: radial-gradient(circle, transparent 52%, black 52%); }
+  /* Pétalas brancas decorativas (margarida grossa) */
+  .slot-petals { position:absolute; inset:0; border-radius:50%; overflow:hidden; }
+  .slot-petal { position:absolute; top:50%; left:50%;
+    width:16px; height:90px; margin-left:-8px; margin-top:-90px;
+    background:#fff; border-radius:8px 8px 4px 4px;
+    transform-origin: 50% 100%;
+    box-shadow: 0 0 3px rgba(0,0,0,.06); }
 
   /* Janela central do slot */
   .slot-window { position:absolute; top:50%; left:50%; width:180px; height:80px;
@@ -422,63 +423,29 @@
   }
 
   // ---- PIÃO DA SORTE: Slot horizontal com som de roleta ----
-  let actx;
-  function ac() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); return actx; }
+  // Áudios customizados (.mp3 na pasta public/)
+  const roletaAudio = new Audio('/roleta.mp3');
+  const winAudio = new Audio('/win.mp3');
+  const loseAudio = new Audio('/lose.mp3');
+  roletaAudio.preload = 'auto';
+  winAudio.preload = 'auto';
+  loseAudio.preload = 'auto';
 
-  // Som de tick (cada item passando na janela)
-  function tickSound(freq) {
-    try {
-      const c = ac(), t0 = c.currentTime;
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = "sine"; o.frequency.value = freq || 800;
-      g.gain.setValueAtTime(0.12, t0);
-      g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.06);
-      o.connect(g); g.connect(c.destination);
-      o.start(t0); o.stop(t0 + 0.06);
-    } catch {}
-  }
-
-  // Som contínuo de roleta girando (ticks acelerando e desacelerando)
-  function slotSpinSound(durationMs) {
-    const totalTicks = 40;
-    const dur = durationMs / 1000;
-    for (let i = 0; i < totalTicks; i++) {
-      const p = i / totalTicks;
-      // Ease-out: ticks começam rápidos e ficam lentos
-      const t = Math.pow(p, 1.8) * dur;
-      const freq = 900 - p * 300; // pitch cai conforme desacelera
-      setTimeout(() => tickSound(freq), t * 1000);
-    }
+  function slotSpinSound() {
+    roletaAudio.currentTime = 0;
+    roletaAudio.play().catch(() => {});
   }
 
   function winSound() {
-    try {
-      const c = ac(), t0 = c.currentTime;
-      // Fanfarra de vitória
-      [523, 659, 784, 1047, 1319].forEach((f, i) => {
-        const o = c.createOscillator(), g = c.createGain(), t = t0 + i * 0.12;
-        o.type = "triangle"; o.frequency.value = f;
-        g.gain.setValueAtTime(0.001, t);
-        g.gain.exponentialRampToValueAtTime(0.22, t + 0.03);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-        o.connect(g); g.connect(c.destination);
-        o.start(t); o.stop(t + 0.36);
-      });
-    } catch {}
+    roletaAudio.pause(); roletaAudio.currentTime = 0;
+    winAudio.currentTime = 0;
+    winAudio.play().catch(() => {});
   }
 
   function loseSound() {
-    try {
-      const c = ac(), t0 = c.currentTime;
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = "sine";
-      o.frequency.setValueAtTime(350, t0);
-      o.frequency.exponentialRampToValueAtTime(120, t0 + 0.6);
-      g.gain.setValueAtTime(0.12, t0);
-      g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
-      o.connect(g); g.connect(c.destination);
-      o.start(t0); o.stop(t0 + 0.6);
-    } catch {}
+    roletaAudio.pause(); roletaAudio.currentTime = 0;
+    loseAudio.currentTime = 0;
+    loseAudio.play().catch(() => {});
   }
 
   // Criar notas de dinheiro caindo
@@ -561,10 +528,24 @@
     });
   }
 
+  // Gerar pétalas de margarida dinamicamente
+  function buildPetals() {
+    const container = document.querySelector('.slot-petals');
+    if (container.children.length > 0) return; // já gerou
+    const totalPetals = 24;
+    for (let i = 0; i < totalPetals; i++) {
+      const petal = document.createElement('div');
+      petal.className = 'slot-petal';
+      petal.style.transform = `rotate(${i * (360 / totalPetals)}deg)`;
+      container.appendChild(petal);
+    }
+  }
+
   // Init: montar pião quando modal abre
   const origFinish = finish;
   function initPiao() {
     spawnMoneyRain();
+    buildPetals();
     // Estado inicial: mostra o primeiro item
     const count = buildSlotTrack(0);
     $("slot-track").style.transform = "translateX(0)";
@@ -575,7 +556,7 @@
     $("piao-giro").textContent = "GIRANDO...";
 
     const DUR = 4500;
-    try { ac().resume(); slotSpinSound(DUR); } catch {}
+    slotSpinSound();
 
     // Chama a API pra saber o resultado
     const resp = await fetch(`${API}/checkout/${orderId}/piao`, { method: "POST" }).then(r => r.json()).catch(() => ({ won: false }));
