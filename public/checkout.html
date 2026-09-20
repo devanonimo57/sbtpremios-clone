@@ -62,57 +62,33 @@
   #piao-giro { font-size:13px; font-weight:700; color:rgba(255,255,255,.85); letter-spacing:1.5px; text-transform:uppercase; margin:2px 0 16px; }
 
   /* Roleta horizontal (slot machine) */
-  .slot-machine { position:relative; width:280px; height:280px; margin:0 auto 16px; }
+  .slot-machine { position:relative; width:290px; height:290px; margin:0 auto 16px; }
 
-  .slot-ring { position:absolute; inset:0; border-radius:50%;
-    background: conic-gradient(from 0deg, #f5c518 0deg, #e0a800 10deg, #ffd84d 20deg, #e0a800 30deg, #f5c518 40deg,
-      #e0a800 50deg, #ffd84d 60deg, #e0a800 70deg, #f5c518 80deg, #e0a800 90deg, #ffd84d 100deg, #e0a800 110deg,
-      #f5c518 120deg, #e0a800 130deg, #ffd84d 140deg, #e0a800 150deg, #f5c518 160deg, #e0a800 170deg, #ffd84d 180deg,
-      #e0a800 190deg, #f5c518 200deg, #e0a800 210deg, #ffd84d 220deg, #e0a800 230deg, #f5c518 240deg,
-      #e0a800 250deg, #ffd84d 260deg, #e0a800 270deg, #f5c518 280deg, #e0a800 290deg, #ffd84d 300deg,
-      #e0a800 310deg, #f5c518 320deg, #e0a800 330deg, #ffd84d 340deg, #e0a800 350deg, #f5c518 360deg);
-    box-shadow: 0 0 40px rgba(245,197,24,.4), inset 0 0 20px rgba(0,0,0,.15); }
+  /* SVG da roleta inteira (anel dourado + pétalas + hub) */
+  .slot-svg { position:absolute; inset:0; width:100%; height:100%; }
 
-  .slot-inner-ring { position:absolute; inset:12px; border-radius:50%; background:#fff;
-    box-shadow: inset 0 0 15px rgba(0,0,0,.08); overflow:hidden; }
-
-  /* Pétalas brancas decorativas (margarida grossa) */
-  .slot-petals { position:absolute; inset:0; border-radius:50%; overflow:hidden; }
-  .slot-petal { position:absolute; top:50%; left:50%;
-    width:16px; height:90px; margin-left:-8px; margin-top:-90px;
-    background:#fff; border-radius:8px 8px 4px 4px;
-    transform-origin: 50% 100%;
-    box-shadow: 0 0 3px rgba(0,0,0,.06); }
-
-  /* Janela central do slot */
-  .slot-window { position:absolute; top:50%; left:50%; width:180px; height:80px;
-    margin:-40px 0 0 -90px; border-radius:14px; overflow:hidden;
-    background: radial-gradient(ellipse at center, #0a1a4d 0%, #06122e 100%);
-    box-shadow: inset 0 0 20px rgba(0,0,0,.6), 0 4px 20px rgba(0,0,0,.3);
+  /* Janela central do slot (por cima do SVG) */
+  .slot-window { position:absolute; top:50%; left:50%; width:174px; height:74px;
+    margin:-37px 0 0 -87px; border-radius:14px; overflow:hidden;
+    background: radial-gradient(ellipse at center, #0b1d5e 0%, #060f2a 100%);
+    box-shadow: inset 0 0 24px rgba(0,0,0,.7), 0 4px 20px rgba(0,0,0,.4);
     display:flex; align-items:center; justify-content:center; z-index:2; }
 
   .slot-track-container { width:100%; height:100%; overflow:hidden; position:relative; }
 
   .slot-track { display:flex; align-items:center; height:100%; will-change:transform; }
 
-  .slot-item { flex:0 0 180px; height:100%; display:flex; align-items:center; justify-content:center;
+  .slot-item { flex:0 0 174px; height:100%; display:flex; align-items:center; justify-content:center;
     font-weight:900; font-size:28px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.5);
     position:relative; }
-  .slot-item .slot-val { font-size:42px; line-height:1; }
-  .slot-item .slot-lbl { font-size:14px; font-weight:700; opacity:.8; display:block; margin-top:2px; }
-  .slot-item.slot-lose { color:rgba(255,255,255,.7); }
-  .slot-item.slot-lose .slot-val { font-size:16px; }
+  .slot-item .slot-val { font-size:40px; line-height:1; }
+  .slot-item .slot-lbl { font-size:13px; font-weight:700; opacity:.8; display:block; margin-top:2px; }
+  .slot-item.slot-lose { color:rgba(255,255,255,.85); }
+  .slot-item.slot-lose .slot-val { font-size:15px; font-weight:800; text-transform:uppercase; line-height:1.3; }
 
   /* Separador vertical entre itens */
   .slot-divider { position:absolute; right:0; top:15%; height:70%; width:1px;
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,.2), transparent); }
-
-  /* Hub central sobre a janela */
-  .slot-hub { position:absolute; top:50%; left:50%; width:60px; height:60px; margin:-30px 0 0 -30px;
-    border-radius:50%; z-index:3; pointer-events:none;
-    background: radial-gradient(circle at 38% 30%, #2b6bff 0%, #0a3fd0 46%, #040e3a 100%);
-    box-shadow: inset 0 3px 8px rgba(255,255,255,.3), 0 4px 16px rgba(0,0,0,.5);
-    border: 3px solid rgba(255,255,255,.1); }
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,.15), transparent); }
 
   #piao-result { font-size:18px; font-weight:800; margin:4px 0 10px; min-height:28px; }
   #piao-result.win { color:#c6ff3a; text-shadow:0 0 20px rgba(198,255,58,.4); }
@@ -264,16 +240,73 @@
       <div id="piao-giro">02 GIROS DISPONÍVEIS</div>
 
       <div class="slot-machine">
-        <div class="slot-ring"></div>
-        <div class="slot-inner-ring">
-          <div class="slot-petals"></div>
-        </div>
+        <svg class="slot-svg" viewBox="0 0 290 290" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Gradiente dourado pro anel externo -->
+            <radialGradient id="goldRing" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe066"/>
+              <stop offset="50%" stop-color="#f5c518"/>
+              <stop offset="100%" stop-color="#c8960a"/>
+            </radialGradient>
+            <!-- Gradiente pro hub central -->
+            <radialGradient id="hubGrad" cx="38%" cy="30%" r="60%">
+              <stop offset="0%" stop-color="#3b7bff"/>
+              <stop offset="46%" stop-color="#0a3fd0"/>
+              <stop offset="100%" stop-color="#040e3a"/>
+            </radialGradient>
+            <!-- Sombra interna -->
+            <filter id="innerSh" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+              <feOffset dx="0" dy="1" result="off"/>
+              <feComposite in="off" in2="SourceGraphic" operator="arithmetic" k1="0" k2="1" k3="0.15" k4="0"/>
+            </filter>
+          </defs>
+
+          <!-- Anel dourado externo (borda grossa) -->
+          <circle cx="145" cy="145" r="140" fill="url(#goldRing)" stroke="#b8860b" stroke-width="1.5"/>
+          <circle cx="145" cy="145" r="140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+
+          <!-- Disco interno branco -->
+          <circle cx="145" cy="145" r="126" fill="#f0f2f8"/>
+
+          <!-- PÉTALAS estilo margarida — 20 pétalas grossas -->
+          <g id="petals">
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(0,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(18,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(36,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(54,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(72,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(90,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(108,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(126,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(144,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(162,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(180,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(198,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(216,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(234,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(252,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(270,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(288,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(306,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(324,145,145)"/>
+            <ellipse cx="145" cy="42" rx="22" ry="52" fill="#fff" stroke="#e0e4ee" stroke-width="0.5" transform="rotate(342,145,145)"/>
+          </g>
+
+          <!-- Disco central cinza (base da janela) -->
+          <circle cx="145" cy="145" r="50" fill="#0b1d5e" opacity=".3"/>
+
+          <!-- Hub central azul (por cima de tudo) -->
+          <circle cx="145" cy="145" r="28" fill="url(#hubGrad)" stroke="rgba(255,255,255,0.15)" stroke-width="2.5"/>
+          <circle cx="145" cy="145" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" filter="url(#innerSh)"/>
+          <!-- Brilho no hub -->
+          <ellipse cx="139" cy="137" rx="10" ry="7" fill="rgba(255,255,255,0.15)"/>
+        </svg>
         <div class="slot-window">
           <div class="slot-track-container">
             <div class="slot-track" id="slot-track"></div>
           </div>
         </div>
-        <div class="slot-hub"></div>
       </div>
 
       <div id="piao-result"></div>
@@ -510,7 +543,7 @@
   function slotAnim(totalItems, durationMs) {
     return new Promise(resolve => {
       const track = $("slot-track");
-      const itemW = 180; // largura de cada item
+      const itemW = 174; // largura de cada item
       const targetOffset = (totalItems - 1) * itemW; // para no último item
       const start = performance.now();
 
@@ -528,24 +561,10 @@
     });
   }
 
-  // Gerar pétalas de margarida dinamicamente
-  function buildPetals() {
-    const container = document.querySelector('.slot-petals');
-    if (container.children.length > 0) return; // já gerou
-    const totalPetals = 24;
-    for (let i = 0; i < totalPetals; i++) {
-      const petal = document.createElement('div');
-      petal.className = 'slot-petal';
-      petal.style.transform = `rotate(${i * (360 / totalPetals)}deg)`;
-      container.appendChild(petal);
-    }
-  }
-
   // Init: montar pião quando modal abre
   const origFinish = finish;
   function initPiao() {
     spawnMoneyRain();
-    buildPetals();
     // Estado inicial: mostra o primeiro item
     const count = buildSlotTrack(0);
     $("slot-track").style.transform = "translateX(0)";
