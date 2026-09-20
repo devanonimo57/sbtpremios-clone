@@ -34,22 +34,96 @@
   #qrbox { display: flex; justify-content: center; padding: 16px; border: 1px solid var(--border); border-radius: 12px; }
   #qrbox canvas, #qrbox img { width: 220px; height: 220px; }
   .ok-check { width: 72px; height: 72px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 20px auto; }
-  #piao-modal { position: fixed; inset: 0; background: rgba(3,7,32,.75); z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; }
-  #piao-modal.open { display: flex; }
-  .piao-card { position: relative; border-radius: 16px; padding: 22px 20px; width: 360px; max-width: 92vw; text-align: center; color: #fff;
-    background: #0540fa url('https://sbtpremios.com/_next/static/media/backgroundSpinningTop.e45beed3.jpg') center/cover; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
-  .piao-title { font-weight: 800; font-size: 26px; color: #ffd21e; letter-spacing: 1px; text-shadow: 0 2px 0 #002; }
-  .prize-row { display: flex; gap: 8px; justify-content: center; margin: 12px 0 6px; }
-  .prize { background: #fff; color: #0540fa; font-weight: 800; font-size: 13px; border-radius: 8px; padding: 8px 6px; flex: 1; box-shadow: 0 3px 0 rgba(0,0,0,.22); }
-  #piao-giro { font-size: 12px; font-weight: 700; color: #ffd21e; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-  .wheel-stage { position: relative; width: 250px; height: 250px; margin: 6px auto 10px; }
-  #piao-wheel { width: 250px; height: 250px; display: block; will-change: transform; }
-  .wheel-hub { position: absolute; top: 50%; left: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle at 38% 30%, #2b6bff 0%, #0a3fd0 46%, #06216e 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,.35), 0 4px 12px rgba(0,0,0,.4); }
-  .wheel-pointer { position: absolute; top: -4px; left: 50%; margin-left: -12px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid #ffd21e; z-index: 3; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
-  #piao-result { font-size: 16px; font-weight: 800; margin: 2px 0 8px; }
-  #piao-result.win { color: #c6ff3a; } #piao-result.lose { color: #dfe6ff; }
-  #piao-result .big { display: block; font-size: 30px; font-weight: 800; color: #fff; margin-top: 4px; }
+  /* ---- PIÃO DA SORTE — fullscreen slot-style ---- */
+  #piao-modal { position:fixed; inset:0; z-index:60; display:none; flex-direction:column; align-items:center; justify-content:center;
+    background: linear-gradient(180deg, #0540fa 0%, #0336d0 50%, #0540fa 100%); overflow:hidden; }
+  #piao-modal.open { display:flex; }
+
+  /* Notas de dinheiro caindo */
+  .money-rain { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .money-note { position:absolute; width:60px; height:30px; opacity:.7; animation: moneyFall linear infinite; }
+  .money-note svg { width:100%; height:100%; }
+  @keyframes moneyFall {
+    0% { transform: translateY(-80px) rotate(0deg) scale(1); opacity:.8; }
+    50% { opacity:.9; }
+    100% { transform: translateY(110vh) rotate(360deg) scale(.7); opacity:.3; }
+  }
+
+  .piao-content { position:relative; z-index:1; text-align:center; width:100%; max-width:420px; padding:20px 16px; }
+
+  .piao-title { font-weight:900; font-size:clamp(32px,8vw,48px); color:#fff; letter-spacing:2px;
+    text-shadow: 0 3px 0 rgba(0,0,0,.25), 0 0 30px rgba(255,210,30,.4);
+    font-style:italic; margin-bottom:4px; }
+
+  .prize-row { display:flex; gap:6px; justify-content:center; margin:10px 0 6px; flex-wrap:wrap; }
+  .prize { background:#fff; color:#0540fa; font-weight:800; font-size:12px; border-radius:8px; padding:7px 10px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.15), 0 0 12px rgba(255,255,255,.2); white-space:nowrap; }
+
+  #piao-giro { font-size:13px; font-weight:700; color:rgba(255,255,255,.85); letter-spacing:1.5px; text-transform:uppercase; margin:2px 0 16px; }
+
+  /* Roleta horizontal (slot machine) */
+  .slot-machine { position:relative; width:280px; height:280px; margin:0 auto 16px; }
+
+  .slot-ring { position:absolute; inset:0; border-radius:50%;
+    background: conic-gradient(from 0deg, #f5c518 0deg, #e0a800 10deg, #ffd84d 20deg, #e0a800 30deg, #f5c518 40deg,
+      #e0a800 50deg, #ffd84d 60deg, #e0a800 70deg, #f5c518 80deg, #e0a800 90deg, #ffd84d 100deg, #e0a800 110deg,
+      #f5c518 120deg, #e0a800 130deg, #ffd84d 140deg, #e0a800 150deg, #f5c518 160deg, #e0a800 170deg, #ffd84d 180deg,
+      #e0a800 190deg, #f5c518 200deg, #e0a800 210deg, #ffd84d 220deg, #e0a800 230deg, #f5c518 240deg,
+      #e0a800 250deg, #ffd84d 260deg, #e0a800 270deg, #f5c518 280deg, #e0a800 290deg, #ffd84d 300deg,
+      #e0a800 310deg, #f5c518 320deg, #e0a800 330deg, #ffd84d 340deg, #e0a800 350deg, #f5c518 360deg);
+    box-shadow: 0 0 40px rgba(245,197,24,.4), inset 0 0 20px rgba(0,0,0,.15); }
+
+  .slot-inner-ring { position:absolute; inset:12px; border-radius:50%; background:#fff;
+    box-shadow: inset 0 0 15px rgba(0,0,0,.08); overflow:hidden; }
+
+  /* Pétalas brancas decorativas (padrão radial) */
+  .slot-petals { position:absolute; inset:0; border-radius:50%; }
+  .slot-petals::before { content:''; position:absolute; inset:8px; border-radius:50%;
+    background: repeating-conic-gradient(from 0deg, #fff 0deg 5deg, #e8edf5 5deg 10deg);
+    mask: radial-gradient(circle, transparent 52%, black 52%);
+    -webkit-mask: radial-gradient(circle, transparent 52%, black 52%); }
+
+  /* Janela central do slot */
+  .slot-window { position:absolute; top:50%; left:50%; width:180px; height:80px;
+    margin:-40px 0 0 -90px; border-radius:14px; overflow:hidden;
+    background: radial-gradient(ellipse at center, #0a1a4d 0%, #06122e 100%);
+    box-shadow: inset 0 0 20px rgba(0,0,0,.6), 0 4px 20px rgba(0,0,0,.3);
+    display:flex; align-items:center; justify-content:center; z-index:2; }
+
+  .slot-track-container { width:100%; height:100%; overflow:hidden; position:relative; }
+
+  .slot-track { display:flex; align-items:center; height:100%; will-change:transform; }
+
+  .slot-item { flex:0 0 180px; height:100%; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:28px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.5);
+    position:relative; }
+  .slot-item .slot-val { font-size:42px; line-height:1; }
+  .slot-item .slot-lbl { font-size:14px; font-weight:700; opacity:.8; display:block; margin-top:2px; }
+  .slot-item.slot-lose { color:rgba(255,255,255,.7); }
+  .slot-item.slot-lose .slot-val { font-size:16px; }
+
+  /* Separador vertical entre itens */
+  .slot-divider { position:absolute; right:0; top:15%; height:70%; width:1px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,.2), transparent); }
+
+  /* Hub central sobre a janela */
+  .slot-hub { position:absolute; top:50%; left:50%; width:60px; height:60px; margin:-30px 0 0 -30px;
+    border-radius:50%; z-index:3; pointer-events:none;
+    background: radial-gradient(circle at 38% 30%, #2b6bff 0%, #0a3fd0 46%, #040e3a 100%);
+    box-shadow: inset 0 3px 8px rgba(255,255,255,.3), 0 4px 16px rgba(0,0,0,.5);
+    border: 3px solid rgba(255,255,255,.1); }
+
+  #piao-result { font-size:18px; font-weight:800; margin:4px 0 10px; min-height:28px; }
+  #piao-result.win { color:#c6ff3a; text-shadow:0 0 20px rgba(198,255,58,.4); }
+  #piao-result.lose { color:rgba(255,255,255,.7); }
+  #piao-result .big { display:block; font-size:32px; font-weight:900; color:#fff; margin-top:4px;
+    text-shadow:0 0 20px rgba(255,255,255,.3); }
+
+  .piao-btns { display:flex; flex-direction:column; gap:8px; max-width:320px; margin:0 auto; }
+
+  /* Pulse no botão girar */
+  @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)} 50%{box-shadow:0 0 0 12px rgba(34,197,94,0)} }
+  #piao-spin { animation: pulseGlow 2s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -173,26 +247,39 @@
     </div>
   </aside>
 
-  <!-- PIÃO DA SORTE — premiação instantânea pós-pagamento (assets reais do site) -->
+  <!-- PIÃO DA SORTE — slot horizontal fullscreen -->
   <div id="piao-modal">
-    <div class="piao-card">
-      <div class="piao-title">PIÃO DA SORTE</div>
+    <div class="money-rain" id="money-rain"></div>
+    <div class="piao-content">
+      <div class="piao-title">PIÃO DA<br>SORTE</div>
       <div class="prize-row">
         <div class="prize">R$ 10.000</div>
         <div class="prize">R$ 1.000</div>
         <div class="prize">R$ 500</div>
+        <div class="prize">R$ 300</div>
+        <div class="prize">R$ 200</div>
+        <div class="prize">R$ 100</div>
       </div>
-      <div id="piao-giro">1 giro disponível</div>
-      <div class="wheel-stage">
-        <div class="wheel-pointer"></div>
-        <img id="piao-wheel" alt="Roleta Pião da Sorte"
-             src="https://sbtpremios.com/_next/static/media/SpinningTopBorder.76ec7ac7.png"
-             onerror="this.style.background='#fff';this.style.borderRadius='50%'" />
-        <div class="wheel-hub"></div>
+      <div id="piao-giro">02 GIROS DISPONÍVEIS</div>
+
+      <div class="slot-machine">
+        <div class="slot-ring"></div>
+        <div class="slot-inner-ring">
+          <div class="slot-petals"></div>
+        </div>
+        <div class="slot-window">
+          <div class="slot-track-container">
+            <div class="slot-track" id="slot-track"></div>
+          </div>
+        </div>
+        <div class="slot-hub"></div>
       </div>
-      <div id="piao-result" style="display:none"></div>
-      <button class="btn btn-green" id="piao-spin" style="margin-top:8px">GIRAR PIÃO</button>
-      <button class="btn btn-blue" id="piao-cont" style="margin-top:8px;display:none">CONTINUAR</button>
+
+      <div id="piao-result"></div>
+      <div class="piao-btns">
+        <button class="btn btn-green" id="piao-spin">GIRAR PIÃO</button>
+        <button class="btn btn-blue" id="piao-cont" style="display:none">CONTINUAR</button>
+      </div>
     </div>
   </div>
 
@@ -334,73 +421,205 @@
     const ci = setInterval(() => { n--; $("ok-count").textContent = n; if (n <= 0) { clearInterval(ci); go(); } }, 1000);
   }
 
-  // ---- Som (WebAudio): zumbido do pião girando + jingle de vitória ----
+  // ---- PIÃO DA SORTE: Slot horizontal com som de roleta ----
   let actx;
   function ac() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); return actx; }
-  function spinSound(ms) {
-    const c = ac(), t0 = c.currentTime, dur = ms / 1000;
-    const osc = c.createOscillator(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(330, t0);
-    osc.frequency.exponentialRampToValueAtTime(85, t0 + dur);
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(0.13, t0 + 0.12);
-    g.gain.setValueAtTime(0.13, t0 + dur - 0.3);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    lfo.frequency.value = 16; lg.gain.value = 22; lfo.connect(lg); lg.connect(osc.frequency);
-    osc.connect(g); g.connect(c.destination);
-    osc.start(t0); lfo.start(t0); osc.stop(t0 + dur); lfo.stop(t0 + dur);
-  }
-  function winSound() {
-    const c = ac(), t0 = c.currentTime;
-    [523, 659, 784, 1047].forEach((f, i) => {
-      const o = c.createOscillator(), g = c.createGain(), t = t0 + i * 0.13;
-      o.type = "triangle"; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.26);
-    });
-  }
-  function loseSound() {
-    const c = ac(), t0 = c.currentTime, o = c.createOscillator(), g = c.createGain();
-    o.type = "sine"; o.frequency.setValueAtTime(300, t0); o.frequency.exponentialRampToValueAtTime(140, t0 + 0.5);
-    g.gain.setValueAtTime(0.14, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
-    o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + 0.5);
+
+  // Som de tick (cada item passando na janela)
+  function tickSound(freq) {
+    try {
+      const c = ac(), t0 = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = freq || 800;
+      g.gain.setValueAtTime(0.12, t0);
+      g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.06);
+      o.connect(g); g.connect(c.destination);
+      o.start(t0); o.stop(t0 + 0.06);
+    } catch {}
   }
 
-  function spinAnim(ms) {
-    return new Promise((resolve) => {
-      const wheel = $("piao-wheel"), start = performance.now();
-      const total = 6 * 360 + (arguments[1] || 0);    // 6 voltas + ângulo final
-      const ease = (t) => 1 - Math.pow(1 - t, 3);      // desacelera no fim
+  // Som contínuo de roleta girando (ticks acelerando e desacelerando)
+  function slotSpinSound(durationMs) {
+    const totalTicks = 40;
+    const dur = durationMs / 1000;
+    for (let i = 0; i < totalTicks; i++) {
+      const p = i / totalTicks;
+      // Ease-out: ticks começam rápidos e ficam lentos
+      const t = Math.pow(p, 1.8) * dur;
+      const freq = 900 - p * 300; // pitch cai conforme desacelera
+      setTimeout(() => tickSound(freq), t * 1000);
+    }
+  }
+
+  function winSound() {
+    try {
+      const c = ac(), t0 = c.currentTime;
+      // Fanfarra de vitória
+      [523, 659, 784, 1047, 1319].forEach((f, i) => {
+        const o = c.createOscillator(), g = c.createGain(), t = t0 + i * 0.12;
+        o.type = "triangle"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 0.36);
+      });
+    } catch {}
+  }
+
+  function loseSound() {
+    try {
+      const c = ac(), t0 = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(350, t0);
+      o.frequency.exponentialRampToValueAtTime(120, t0 + 0.6);
+      g.gain.setValueAtTime(0.12, t0);
+      g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
+      o.connect(g); g.connect(c.destination);
+      o.start(t0); o.stop(t0 + 0.6);
+    } catch {}
+  }
+
+  // Criar notas de dinheiro caindo
+  function spawnMoneyRain() {
+    const rain = $("money-rain");
+    rain.innerHTML = "";
+    const noteSVG = `<svg viewBox="0 0 60 30" fill="none"><rect x="1" y="1" width="58" height="28" rx="4" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/><rect x="6" y="5" width="48" height="20" rx="2" fill="#34d399" opacity=".5"/><text x="30" y="19" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">R$</text></svg>`;
+    for (let i = 0; i < 18; i++) {
+      const note = document.createElement("div");
+      note.className = "money-note";
+      note.innerHTML = noteSVG;
+      note.style.left = Math.random() * 100 + "%";
+      note.style.animationDuration = (3 + Math.random() * 4) + "s";
+      note.style.animationDelay = (Math.random() * 5) + "s";
+      note.style.width = (40 + Math.random() * 40) + "px";
+      rain.appendChild(note);
+    }
+  }
+
+  // Valores da roleta
+  const SLOT_VALUES = [
+    { val: 100, label: "REAIS" },
+    { val: 200, label: "REAIS" },
+    { val: 300, label: "REAIS" },
+    { val: 500, label: "REAIS" },
+    { val: 1000, label: "REAIS" },
+    { val: 10000, label: "REAIS" },
+    { val: 0, label: "FOI POR\nUMA VEZ", lose: true },
+  ];
+
+  // Montar trilha do slot
+  function buildSlotTrack(targetIdx) {
+    const track = $("slot-track");
+    track.innerHTML = "";
+    // Gera uma sequência longa para simular o giro: ~30 itens antes de parar no alvo
+    const items = [];
+    for (let round = 0; round < 5; round++) {
+      // Embaralha os valores em cada rodada
+      const shuffled = [...SLOT_VALUES].sort(() => Math.random() - 0.5);
+      items.push(...shuffled);
+    }
+    // Coloca o resultado no final
+    items.push(SLOT_VALUES[targetIdx]);
+
+    items.forEach((it, i) => {
+      const div = document.createElement("div");
+      div.className = "slot-item" + (it.lose ? " slot-lose" : "");
+      if (it.lose) {
+        div.innerHTML = `<div><span class="slot-val">${it.label.replace("\n","<br>")}</span></div>`;
+      } else {
+        const formatted = it.val >= 1000 ? it.val.toLocaleString("pt-BR") : it.val;
+        div.innerHTML = `<div><span class="slot-val">${formatted}</span><span class="slot-lbl">${it.label}</span></div>`;
+      }
+      if (i < items.length - 1) div.innerHTML += '<div class="slot-divider"></div>';
+      track.appendChild(div);
+    });
+
+    return items.length;
+  }
+
+  // Animação do slot: desliza a trilha pro lado
+  function slotAnim(totalItems, durationMs) {
+    return new Promise(resolve => {
+      const track = $("slot-track");
+      const itemW = 180; // largura de cada item
+      const targetOffset = (totalItems - 1) * itemW; // para no último item
+      const start = performance.now();
+
       function frame(now) {
-        const p = Math.min(1, (now - start) / ms);
-        wheel.style.transform = `rotate(${ease(p) * total}deg)`;
-        if (p < 1) requestAnimationFrame(frame); else resolve();
+        const elapsed = now - start;
+        const p = Math.min(1, elapsed / durationMs);
+        // Ease-out cúbico: começa rápido, desacelera suavemente
+        const ease = 1 - Math.pow(1 - p, 3);
+        const x = ease * targetOffset;
+        track.style.transform = `translateX(-${x}px)`;
+        if (p < 1) requestAnimationFrame(frame);
+        else resolve();
       }
       requestAnimationFrame(frame);
     });
   }
 
+  // Init: montar pião quando modal abre
+  const origFinish = finish;
+  function initPiao() {
+    spawnMoneyRain();
+    // Estado inicial: mostra o primeiro item
+    const count = buildSlotTrack(0);
+    $("slot-track").style.transform = "translateX(0)";
+  }
+
   $("piao-spin").onclick = async () => {
-    $("piao-spin").style.display = "none"; $("piao-giro").textContent = "girando...";
-    const DUR = 4200;
-    try { ac().resume(); spinSound(DUR); } catch {}
+    $("piao-spin").style.display = "none";
+    $("piao-giro").textContent = "GIRANDO...";
+
+    const DUR = 4500;
+    try { ac().resume(); slotSpinSound(DUR); } catch {}
+
+    // Chama a API pra saber o resultado
     const resp = await fetch(`${API}/checkout/${orderId}/piao`, { method: "POST" }).then(r => r.json()).catch(() => ({ won: false }));
-    await spinAnim(DUR, Math.floor(Math.random() * 360));
-    const res = $("piao-result"); res.style.display = "block";
-    if (resp.won) {
-      res.className = "win"; res.innerHTML = `Parabéns pelo prêmio! 🎉<span class="big">${brl(resp.prize)} no PIX</span>`;
-      $("piao-giro").textContent = "prêmio creditado no saldo";
-      try { winSound(); } catch {}
+
+    // Decide qual item parar
+    let targetIdx;
+    if (resp.won && resp.prize) {
+      targetIdx = SLOT_VALUES.findIndex(v => v.val === resp.prize);
+      if (targetIdx < 0) targetIdx = 0; // fallback
     } else {
-      res.className = "lose"; res.innerHTML = `Não foi dessa vez 😕<br><span style="font-size:13px;font-weight:400">Seu título segue concorrendo ao sorteio principal.</span>`;
-      $("piao-giro").textContent = "sem giros disponíveis";
-      try { loseSound(); } catch {}
+      targetIdx = SLOT_VALUES.findIndex(v => v.lose);
+    }
+
+    const totalItems = buildSlotTrack(targetIdx);
+    $("slot-track").style.transform = "translateX(0)";
+
+    // Aguarda um frame pra garantir o layout
+    await new Promise(r => requestAnimationFrame(r));
+    await slotAnim(totalItems, DUR);
+
+    const res = $("piao-result");
+    if (resp.won) {
+      res.className = "win";
+      res.innerHTML = `PARABÉNS! 🎉<span class="big">${brl(resp.prize)} no PIX</span>`;
+      $("piao-giro").textContent = "PRÊMIO CREDITADO NO SALDO";
+      winSound();
+    } else {
+      res.className = "lose";
+      res.innerHTML = `Não foi dessa vez 😕<br><span style="font-size:13px;font-weight:400">Seu título segue concorrendo ao sorteio principal.</span>`;
+      $("piao-giro").textContent = "SEM GIROS DISPONÍVEIS";
+      loseSound();
     }
     piaoDone = true;
     $("piao-cont").style.display = "block";
   };
+
   $("piao-cont").onclick = () => { $("piao-modal").classList.remove("open"); goToConfirm(); };
+
+  // Quando o modal abre, inicializa a roleta
+  const _origOpen = $("piao-modal").classList.add.bind($("piao-modal").classList);
+  const piaoObs = new MutationObserver(() => {
+    if ($("piao-modal").classList.contains("open")) initPiao();
+  });
+  piaoObs.observe($("piao-modal"), { attributes: true, attributeFilter: ["class"] });
 </script>
 </body>
 </html>
